@@ -1,0 +1,23 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+loan <- read_csv("~/Documents/Data Science 2022/Mid Course Project/Data/state_TN_actions_taken.csv")
+```
+
+The analysis will solely focus on loan applications for the purpose of 'Home Purchase' (loan_purpose == 1)
+
+```{r}
+mortgage_loan <- loan %>%
+  filter(loan_purpose == 1)
+```
+
+
+
