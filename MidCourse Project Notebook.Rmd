@@ -16,8 +16,42 @@ The analysis will solely focus on loan applications for the purpose of 'Home Pur
 
 ```{r}
 mortgage_loan <- loan %>%
-  filter(loan_purpose == 1)
+  filter(loan_purpose == 1) %>%
+  mutate(loan_app_denied = ifelse(action_taken==3,1,0)) %>%
+  mutate(debt_to_income_group = case_when(
+    debt_to_income_ratio == "30%-<36%" ~ "30%-<40%",
+    as.numeric(debt_to_income_ratio) %in% 36:39 ~ "30%-<40%",
+    as.numeric(debt_to_income_ratio) %in% 40:49 ~ "40%-<50%",
+    TRUE ~ debt_to_income_ratio
+    ))
 ```
+
+```{r}
+mortgage_loan_summary <- 
+  mortgage_loan %>% 
+  group_by(derived_race) %>%
+  summarize(application_count = n(), denial_count = sum(loan_app_denied)) %>%
+  mutate(pct_denial = 100*denial_count/application_count)
+
+mortgage_loan_debt_summary <-
+  mortgage_loan %>% 
+  group_by(derived_race, debt_to_income_group) %>%
+  summarize(application_count = n())
+```
+
+
+```{r}
+mortgage_loan_summary %>% 
+  ggplot(aes(y=derived_race, x=pct_denial, fill=derived_race)) +
+  geom_col() 
+
+mortgage_loan_debt_summary %>% 
+  ggplot(aes(y=derived_race, x=debt_to_income_group)) +
+  geom_cols() 
+```
+
+
+
 
 
 
