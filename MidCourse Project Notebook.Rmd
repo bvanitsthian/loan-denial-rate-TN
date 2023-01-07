@@ -75,9 +75,11 @@ glm_ft <-
       family = binomial(link = "logit"),
       data = mortgage_loan_glm)
 summary(glm_ft)
+confint(glm_ft)
 
 ```
-Income is not significant by itself
+
+Income is significant by itself
 
 ```{r}
 glm_income <- 
@@ -85,6 +87,7 @@ glm_income <-
       family = binomial(link = "logit"),
       data = mortgage_loan_glm)
 summary(glm_income)
+confint(glm_income)
 ```
 
 
