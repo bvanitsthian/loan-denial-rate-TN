@@ -12,11 +12,14 @@ library(tidyverse)
 loan <- read_csv("~/Documents/Data Science 2022/Mid Course Project/Data/state_TN_actions_taken.csv")
 ```
 
-The analysis will solely focus on loan applications for the purpose of 'Home Purchase' (loan_purpose == 1)
+The analysis will solely focus on loan applications for the purpose of 'Home Purchase' (loan_purpose == 1), 'Not primarily for a business or commercial purpose' (business_or_commercial_purpose == 2), Occupancy type for the dwelling is "1 - Principal residence"
 
 ```{r}
 mortgage_loan <- loan %>%
-  filter(loan_purpose == 1) %>%
+  filter(loan_purpose == 1, 
+         business_or_commercial_purpose == 2,
+         occupancy_type == 1,
+         applicant_age != "8888") %>%
   mutate(loan_app_denied = ifelse(action_taken==3,1,0)) %>%
   mutate(debt_to_income_group = case_when(
     debt_to_income_ratio == "30%-<36%" ~ "30%-<40%",
@@ -43,14 +46,46 @@ mortgage_loan_debt_summary <-
 ```{r}
 mortgage_loan_summary %>% 
   ggplot(aes(y=derived_race, x=pct_denial, fill=derived_race)) +
-  geom_col() 
-
-mortgage_loan_debt_summary %>% 
-  ggplot(aes(y=derived_race, x=debt_to_income_group)) +
-  geom_cols() 
+  geom_col()
 ```
 
+```{r}
+mortgage_loan_debt_summary %>% 
+  ggplot(aes(y=application_count, x=debt_to_income_group, fill=derived_race)) +
+  geom_col(position="dodge") +
+  scale_y_continuous(trans = "log10") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
 
+mortgage_loan_debt_summary %>% 
+  ggplot(aes(y=application_count, x=debt_to_income_group, fill=derived_race)) +
+  geom_col(position="dodge") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+```
+
+```{r}
+mortgage_loan_glm <- 
+  mortgage_loan %>%
+  filter(debt_to_income_group != "Exempt" & !is.na(debt_to_income_group),
+         income > 0 & income < 200)
+  
+glm_ft <- 
+  glm(loan_app_denied ~ 
+        factor(applicant_age) + factor(debt_to_income_group) + income + factor(derived_race) + 
+        factor(derived_sex) -1, 
+      family = binomial(link = "logit"),
+      data = mortgage_loan_glm)
+summary(glm_ft)
+
+```
+Income is not significant by itself
+
+```{r}
+glm_income <- 
+  glm(loan_app_denied ~ income, 
+      family = binomial(link = "logit"),
+      data = mortgage_loan_glm)
+summary(glm_income)
+```
 
 
 
