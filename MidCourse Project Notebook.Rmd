@@ -75,9 +75,15 @@ glm_ft <-
       family = binomial(link = "logit"),
       data = mortgage_loan_glm)
 summary(glm_ft)
-confint(glm_ft)
 
+
+
+mortgage_loan_glm$glm_ft_predict <- 
+  ifelse(predict(glm_ft, mortgage_loan_glm, type = "response") < 0.5, 0, 1)
+
+100*table(mortgage_loan_glm$glm_ft_predict==mortgage_loan_glm$loan_app_denied)/nrow(mortgage_loan_glm)
 ```
+
 
 Income is significant by itself
 
@@ -88,6 +94,14 @@ glm_income <-
       data = mortgage_loan_glm)
 summary(glm_income)
 confint(glm_income)
+
+glm_income_predict <- 
+  predict(glm_income, mortgage_loan_glm)
+
+mortgage_loan_glm$glm_income_predict <- 
+  ifelse(predict(glm_income, mortgage_loan_glm, type = "response") < 0.5, 0, 1)
+
+100*table(mortgage_loan_glm$glm_income_predict==mortgage_loan_glm$loan_app_denied)/nrow(mortgage_loan_glm)
 ```
 
 

@@ -1848,113 +1848,40 @@ mortgage_loan_debt_summary %&gt;%
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2xtX2Z0IDwtIFxuICBnbG0obG9hbl9hcHBfZGVuaWVkIH4gXG4gICAgICAgIGZhY3RvcihhcHBsaWNhbnRfYWdlKSArIGZhY3RvcihkZWJ0X3RvX2luY29tZV9ncm91cCkgKyBpbmNvbWUgKyBmYWN0b3IoZGVyaXZlZF9yYWNlKSArIFxuICAgICAgICBmYWN0b3IoZGVyaXZlZF9zZXgpIC0xLCBcbiAgICAgIGZhbWlseSA9IGJpbm9taWFsKGxpbmsgPSBcImxvZ2l0XCIpLFxuICAgICAgZGF0YSA9IG1vcnRnYWdlX2xvYW5fZ2xtKVxuc3VtbWFyeShnbG1fZnQpXG5cbmBgYCJ9 -->
-<pre class="r"><code>glm_ft &lt;- 
-  glm(loan_app_denied ~ 
-        factor(applicant_age) + factor(debt_to_income_group) + income + factor(derived_race) + 
-        factor(derived_sex) -1, 
-      family = binomial(link = &quot;logit&quot;),
-      data = mortgage_loan_glm)
-summary(glm_ft)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuMTAwKnRhYmxlKG1vcnRnYWdlX2xvYW5fZ2xtJGdsbV9mdF9wcmVkaWN0PT1tb3J0Z2FnZV9sb2FuX2dsbSRsb2FuX2FwcF9kZW5pZWQpL25yb3cobW9ydGdhZ2VfbG9hbl9nbG0pXG5cbmBgYCJ9 -->
+<pre class="r"><code>100*table(mortgage_loan_glm$glm_ft_predict==mortgage_loan_glm$loan_app_denied)/nrow(mortgage_loan_glm)
 </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG5DYWxsOlxuZ2xtKGZvcm11bGEgPSBsb2FuX2FwcF9kZW5pZWQgfiBmYWN0b3IoYXBwbGljYW50X2FnZSkgKyBmYWN0b3IoZGVidF90b19pbmNvbWVfZ3JvdXApICsgXG4gICAgaW5jb21lICsgZmFjdG9yKGRlcml2ZWRfcmFjZSkgKyBmYWN0b3IoZGVyaXZlZF9zZXgpIC0gMSwgXG4gICAgZmFtaWx5ID0gYmlub21pYWwobGluayA9IFwibG9naXRcIiksIGRhdGEgPSBtb3J0Z2FnZV9sb2FuX2dsbSlcblxuRGV2aWFuY2UgUmVzaWR1YWxzOiBcbiAgICBNaW4gICAgICAgMVEgICBNZWRpYW4gICAgICAgM1EgICAgICBNYXggIFxuLTIuNzQyOCAgLTAuNDg0NCAgLTAuNDEwNSAgLTAuMzA4NiAgIDIuOTg3NyAgXG5cbkNvZWZmaWNpZW50czpcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBFc3RpbWF0ZSBTdGQuIEVycm9yIHogdmFsdWUgUHIoPnx6fCkgICAgXG5mYWN0b3IoYXBwbGljYW50X2FnZSk8MjUgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAwLjE3MTY4NDUgIDAuMTQ0NDk4MSAgIDEuMTg4IDAuMjM0Nzc3ICAgIFxuZmFjdG9yKGFwcGxpY2FudF9hZ2UpPjc0ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAtMC4yODc2NTAxICAwLjE2NzM2MzIgIC0xLjcxOSAwLjA4NTY2NiAuICBcbmZhY3RvcihhcHBsaWNhbnRfYWdlKTI1LTM0ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgLTAuMDE2NDA2NCAgMC4xNDI3MzE2ICAtMC4xMTUgMC45MDg0ODggICAgXG5mYWN0b3IoYXBwbGljYW50X2FnZSkzNS00NCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAwLjIwNDMwNDYgIDAuMTQzNDU3NCAgIDEuNDI0IDAuMTU0NDA0ICAgIFxuZmFjdG9yKGFwcGxpY2FudF9hZ2UpNDUtNTQgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgMC4zMjI0OTEyICAwLjE0MzgzODQgICAyLjI0MiAwLjAyNDk1OSAqICBcbmZhY3RvcihhcHBsaWNhbnRfYWdlKTU1LTY0ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDAuMTUxNzg1MiAgMC4xNDQyNDI3ICAgMS4wNTIgMC4yOTI2NjcgICAgXG5mYWN0b3IoYXBwbGljYW50X2FnZSk2NS03NCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC0wLjE2NTc4NTMgIDAuMTQ3NjU5MiAgLTEuMTIzIDAuMjYxNTQxICAgIFxuZmFjdG9yKGRlYnRfdG9faW5jb21lX2dyb3VwKT42MCUgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgMy4zNTYzNzQ5ICAwLjA3NDA0NzYgIDQ1LjMyNyAgPCAyZS0xNiAqKipcbmZhY3RvcihkZWJ0X3RvX2luY29tZV9ncm91cCkyMCUtPDMwJSAgICAgICAgICAgICAgICAgICAgICAgICAgLTAuNzYxNDUwNSAgMC4wNDc1NDQxIC0xNi4wMTYgIDwgMmUtMTYgKioqXG5mYWN0b3IoZGVidF90b19pbmNvbWVfZ3JvdXApMzAlLTw0MCUgICAgICAgICAgICAgICAgICAgICAgICAgIC0wLjk3NTk2NDAgIDAuMDQ0ODM0NiAtMjEuNzY4ICA8IDJlLTE2ICoqKlxuZmFjdG9yKGRlYnRfdG9faW5jb21lX2dyb3VwKTQwJS08NTAlICAgICAgICAgICAgICAgICAgICAgICAgICAtMC45MjQ4MDYyICAwLjA0NDY2NjIgLTIwLjcwNSAgPCAyZS0xNiAqKipcbmZhY3RvcihkZWJ0X3RvX2luY29tZV9ncm91cCk1MCUtNjAlICAgICAgICAgICAgICAgICAgICAgICAgICAgIDAuMjAxNDQyNyAgMC4wNDk0NDIxICAgNC4wNzQgNC42MmUtMDUgKioqXG5pbmNvbWUgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC0wLjAxMzkzMjggIDAuMDAwMzgwNiAtMzYuNjA5ICA8IDJlLTE2ICoqKlxuZmFjdG9yKGRlcml2ZWRfcmFjZSlBc2lhbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAtMC43NDY1MjQ2ICAwLjE1MDI0NjAgIC00Ljk2OSA2Ljc0ZS0wNyAqKipcbmZhY3RvcihkZXJpdmVkX3JhY2UpQmxhY2sgb3IgQWZyaWNhbiBBbWVyaWNhbiAgICAgICAgICAgICAgICAgLTAuNTEwMzI3NCAgMC4xMzU4NTM1ICAtMy43NTYgMC4wMDAxNzIgKioqXG5mYWN0b3IoZGVyaXZlZF9yYWNlKU5hdGl2ZSBIYXdhaWlhbiBvciBPdGhlciBQYWNpZmljIElzbGFuZGVyIC0wLjU4NDU5OTMgIDAuMzIyOTYyOCAgLTEuODEwIDAuMDcwMjc4IC4gIFxuZmFjdG9yKGRlcml2ZWRfcmFjZSlXaGl0ZSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAtMC42NDQ0NDM0ICAwLjEzMjY2MDYgIC00Ljg1OCAxLjE5ZS0wNiAqKipcbmZhY3RvcihkZXJpdmVkX3NleClKb2ludCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDAuMTIzNzU5NiAgMC4wMjk0MjQxICAgNC4yMDYgMi42MGUtMDUgKioqXG5mYWN0b3IoZGVyaXZlZF9zZXgpTWFsZSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC0wLjA0NjExNjQgIDAuMDI2NTUzMSAgLTEuNzM3IDAuMDgyNDI5IC4gIFxuZmFjdG9yKGRlcml2ZWRfc2V4KVNleCBOb3QgQXZhaWxhYmxlICAgICAgICAgICAgICAgICAgICAgICAgICAgMS4wMTUzOTg0ICAwLjExNzkxNjcgICA4LjYxMSAgPCAyZS0xNiAqKipcbi0tLVxuU2lnbmlmLiBjb2RlczogIDAg4oCYKioq4oCZIDAuMDAxIOKAmCoq4oCZIDAuMDEg4oCYKuKAmSAwLjA1IOKAmC7igJkgMC4xIOKAmCDigJkgMVxuXG4oRGlzcGVyc2lvbiBwYXJhbWV0ZXIgZm9yIGJpbm9taWFsIGZhbWlseSB0YWtlbiB0byBiZSAxKVxuXG4gICAgTnVsbCBkZXZpYW5jZTogMTM5MjUyICBvbiAxMDA0NDkgIGRlZ3JlZXMgb2YgZnJlZWRvbVxuUmVzaWR1YWwgZGV2aWFuY2U6ICA2MTk3NyAgb24gMTAwNDI5ICBkZWdyZWVzIG9mIGZyZWVkb21cbkFJQzogNjIwMTdcblxuTnVtYmVyIG9mIEZpc2hlciBTY29yaW5nIGl0ZXJhdGlvbnM6IDVcbiJ9 -->
+<!-- rnb-output-begin eyJkYXRhIjoiXG4gICBGQUxTRSAgICAgVFJVRSBcbjEwLjAzODkzIDg5Ljk2MTA3IFxuIn0= -->
 <pre><code>
-Call:
-glm(formula = loan_app_denied ~ factor(applicant_age) + factor(debt_to_income_group) + 
-    income + factor(derived_race) + factor(derived_sex) - 1, 
-    family = binomial(link = &quot;logit&quot;), data = mortgage_loan_glm)
-
-Deviance Residuals: 
-    Min       1Q   Median       3Q      Max  
--2.7428  -0.4844  -0.4105  -0.3086   2.9877  
-
-Coefficients:
-                                                                Estimate Std. Error z value Pr(&gt;|z|)    
-factor(applicant_age)&lt;25                                       0.1716845  0.1444981   1.188 0.234777    
-factor(applicant_age)&gt;74                                      -0.2876501  0.1673632  -1.719 0.085666 .  
-factor(applicant_age)25-34                                    -0.0164064  0.1427316  -0.115 0.908488    
-factor(applicant_age)35-44                                     0.2043046  0.1434574   1.424 0.154404    
-factor(applicant_age)45-54                                     0.3224912  0.1438384   2.242 0.024959 *  
-factor(applicant_age)55-64                                     0.1517852  0.1442427   1.052 0.292667    
-factor(applicant_age)65-74                                    -0.1657853  0.1476592  -1.123 0.261541    
-factor(debt_to_income_group)&gt;60%                               3.3563749  0.0740476  45.327  &lt; 2e-16 ***
-factor(debt_to_income_group)20%-&lt;30%                          -0.7614505  0.0475441 -16.016  &lt; 2e-16 ***
-factor(debt_to_income_group)30%-&lt;40%                          -0.9759640  0.0448346 -21.768  &lt; 2e-16 ***
-factor(debt_to_income_group)40%-&lt;50%                          -0.9248062  0.0446662 -20.705  &lt; 2e-16 ***
-factor(debt_to_income_group)50%-60%                            0.2014427  0.0494421   4.074 4.62e-05 ***
-income                                                        -0.0139328  0.0003806 -36.609  &lt; 2e-16 ***
-factor(derived_race)Asian                                     -0.7465246  0.1502460  -4.969 6.74e-07 ***
-factor(derived_race)Black or African American                 -0.5103274  0.1358535  -3.756 0.000172 ***
-factor(derived_race)Native Hawaiian or Other Pacific Islander -0.5845993  0.3229628  -1.810 0.070278 .  
-factor(derived_race)White                                     -0.6444434  0.1326606  -4.858 1.19e-06 ***
-factor(derived_sex)Joint                                       0.1237596  0.0294241   4.206 2.60e-05 ***
-factor(derived_sex)Male                                       -0.0461164  0.0265531  -1.737 0.082429 .  
-factor(derived_sex)Sex Not Available                           1.0153984  0.1179167   8.611  &lt; 2e-16 ***
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-
-(Dispersion parameter for binomial family taken to be 1)
-
-    Null deviance: 139252  on 100449  degrees of freedom
-Residual deviance:  61977  on 100429  degrees of freedom
-AIC: 62017
-
-Number of Fisher Scoring iterations: 5</code></pre>
+   FALSE     TRUE 
+10.03893 89.96107 </code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Income is significant by itself</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2xtX2luY29tZSA8LSBcbiAgZ2xtKGxvYW5fYXBwX2RlbmllZCB+IGluY29tZSwgXG4gICAgICBmYW1pbHkgPSBiaW5vbWlhbChsaW5rID0gXCJsb2dpdFwiKSxcbiAgICAgIGRhdGEgPSBtb3J0Z2FnZV9sb2FuX2dsbSlcbnN1bW1hcnkoZ2xtX2luY29tZSlcbmBgYCJ9 -->
-<pre class="r"><code>glm_income &lt;- 
-  glm(loan_app_denied ~ income, 
-      family = binomial(link = &quot;logit&quot;),
-      data = mortgage_loan_glm)
-summary(glm_income)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2xtX2luY29tZV9wcmVkaWN0IDwtIFxuICBwcmVkaWN0KGdsbV9pbmNvbWUsIG1vcnRnYWdlX2xvYW5fZ2xtKVxuXG5tb3J0Z2FnZV9sb2FuX2dsbSRnbG1faW5jb21lX3ByZWRpY3QgPC0gXG4gIGlmZWxzZShwcmVkaWN0KGdsbV9pbmNvbWUsIG1vcnRnYWdlX2xvYW5fZ2xtLCB0eXBlID0gXCJyZXNwb25zZVwiKSA8IDAuNSwgMCwgMSlcblxuMTAwKnRhYmxlKG1vcnRnYWdlX2xvYW5fZ2xtJGdsbV9pbmNvbWVfcHJlZGljdD09bW9ydGdhZ2VfbG9hbl9nbG0kbG9hbl9hcHBfZGVuaWVkKS9ucm93KG1vcnRnYWdlX2xvYW5fZ2xtKVxuXG5gYGAifQ== -->
+<pre class="r"><code>glm_income_predict &lt;- 
+  predict(glm_income, mortgage_loan_glm)
+
+mortgage_loan_glm$glm_income_predict &lt;- 
+  ifelse(predict(glm_income, mortgage_loan_glm, type = &quot;response&quot;) &lt; 0.5, 0, 1)
+
+100*table(mortgage_loan_glm$glm_income_predict==mortgage_loan_glm$loan_app_denied)/nrow(mortgage_loan_glm)
+</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG5DYWxsOlxuZ2xtKGZvcm11bGEgPSBsb2FuX2FwcF9kZW5pZWQgfiBpbmNvbWUsIGZhbWlseSA9IGJpbm9taWFsKGxpbmsgPSBcImxvZ2l0XCIpLCBcbiAgICBkYXRhID0gbW9ydGdhZ2VfbG9hbl9nbG0pXG5cbkRldmlhbmNlIFJlc2lkdWFsczogXG4gICAgTWluICAgICAgIDFRICAgTWVkaWFuICAgICAgIDNRICAgICAgTWF4ICBcbi0wLjg2ODMgIC0wLjU4NjEgIC0wLjQ3NzkgIC0wLjMyMTcgICAyLjkxOTkgIFxuXG5Db2VmZmljaWVudHM6XG4gICAgICAgICAgICAgIEVzdGltYXRlIFN0ZC4gRXJyb3IgeiB2YWx1ZSBQcig+fHp8KSAgICBcbihJbnRlcmNlcHQpIC0wLjc2Mzc1ODUgIDAuMDIyMjg0MyAgLTM0LjI3ICAgPDJlLTE2ICoqKlxuaW5jb21lICAgICAgLTAuMDE3NTEyMCAgMC4wMDAzMzIyICAtNTIuNzEgICA8MmUtMTYgKioqXG4tLS1cblNpZ25pZi4gY29kZXM6ICAwIOKAmCoqKuKAmSAwLjAwMSDigJgqKuKAmSAwLjAxIOKAmCrigJkgMC4wNSDigJgu4oCZIDAuMSDigJgg4oCZIDFcblxuKERpc3BlcnNpb24gcGFyYW1ldGVyIGZvciBiaW5vbWlhbCBmYW1pbHkgdGFrZW4gdG8gYmUgMSlcblxuICAgIE51bGwgZGV2aWFuY2U6IDc1NTYzICBvbiAxMDA0NDggIGRlZ3JlZXMgb2YgZnJlZWRvbVxuUmVzaWR1YWwgZGV2aWFuY2U6IDcyMDY3ICBvbiAxMDA0NDcgIGRlZ3JlZXMgb2YgZnJlZWRvbVxuQUlDOiA3MjA3MVxuXG5OdW1iZXIgb2YgRmlzaGVyIFNjb3JpbmcgaXRlcmF0aW9uczogNVxuIn0= -->
+<!-- rnb-output-begin eyJkYXRhIjoiXG4gICBGQUxTRSAgICAgVFJVRSBcbjEyLjQ2NzAyIDg3LjUzMjk4IFxuIn0= -->
 <pre><code>
-Call:
-glm(formula = loan_app_denied ~ income, family = binomial(link = &quot;logit&quot;), 
-    data = mortgage_loan_glm)
-
-Deviance Residuals: 
-    Min       1Q   Median       3Q      Max  
--0.8683  -0.5861  -0.4779  -0.3217   2.9199  
-
-Coefficients:
-              Estimate Std. Error z value Pr(&gt;|z|)    
-(Intercept) -0.7637585  0.0222843  -34.27   &lt;2e-16 ***
-income      -0.0175120  0.0003322  -52.71   &lt;2e-16 ***
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-
-(Dispersion parameter for binomial family taken to be 1)
-
-    Null deviance: 75563  on 100448  degrees of freedom
-Residual deviance: 72067  on 100447  degrees of freedom
-AIC: 72071
-
-Number of Fisher Scoring iterations: 5</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29uZmludChnbG1faW5jb21lKVxuYGBgIn0= -->
-<pre class="r"><code>confint(glm_income)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiV2FpdGluZyBmb3IgcHJvZmlsaW5nIHRvIGJlIGRvbmUuLi5cbiJ9 -->
-<pre><code>Waiting for profiling to be done...</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICAgICAgICAgICAgMi41ICUgICAgICA5Ny41ICVcbihJbnRlcmNlcHQpIC0wLjgwNzQyMjQ4IC0wLjcyMDA2NzMzXG5pbmNvbWUgICAgICAtMC4wMTgxNjU4NCAtMC4wMTY4NjM0M1xuIn0= -->
-<pre><code>                  2.5 %      97.5 %
-(Intercept) -0.80742248 -0.72006733
-income      -0.01816584 -0.01686343</code></pre>
+   FALSE     TRUE 
+12.46702 87.53298 </code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKCmBgYHtyfQpsaWJyYXJ5KHRpZHl2ZXJzZSkKYGBgCgpgYGB7cn0KbG9hbiA8LSByZWFkX2Nzdigifi9Eb2N1bWVudHMvRGF0YSBTY2llbmNlIDIwMjIvTWlkIENvdXJzZSBQcm9qZWN0L0RhdGEvc3RhdGVfVE5fYWN0aW9uc190YWtlbi5jc3YiKQpgYGAKClRoZSBhbmFseXNpcyB3aWxsIHNvbGVseSBmb2N1cyBvbiBsb2FuIGFwcGxpY2F0aW9ucyBmb3IgdGhlIHB1cnBvc2Ugb2YgJ0hvbWUgUHVyY2hhc2UnIChsb2FuX3B1cnBvc2UgPT0gMSksICdOb3QgcHJpbWFyaWx5IGZvciBhIGJ1c2luZXNzIG9yIGNvbW1lcmNpYWwgcHVycG9zZScgKGJ1c2luZXNzX29yX2NvbW1lcmNpYWxfcHVycG9zZSA9PSAyKSwgT2NjdXBhbmN5IHR5cGUgZm9yIHRoZSBkd2VsbGluZyBpcyAiMSAtIFByaW5jaXBhbCByZXNpZGVuY2UiCgpgYGB7cn0KbW9ydGdhZ2VfbG9hbiA8LSBsb2FuICU+JQogIGZpbHRlcihsb2FuX3B1cnBvc2UgPT0gMSwgCiAgICAgICAgIGJ1c2luZXNzX29yX2NvbW1lcmNpYWxfcHVycG9zZSA9PSAyLAogICAgICAgICBvY2N1cGFuY3lfdHlwZSA9PSAxLAogICAgICAgICBhcHBsaWNhbnRfYWdlICE9ICI4ODg4IikgJT4lCiAgbXV0YXRlKGxvYW5fYXBwX2RlbmllZCA9IGlmZWxzZShhY3Rpb25fdGFrZW49PTMsMSwwKSkgJT4lCiAgbXV0YXRlKGRlYnRfdG9faW5jb21lX2dyb3VwID0gY2FzZV93aGVuKAogICAgZGVidF90b19pbmNvbWVfcmF0aW8gPT0gIjMwJS08MzYlIiB+ICIzMCUtPDQwJSIsCiAgICBhcy5udW1lcmljKGRlYnRfdG9faW5jb21lX3JhdGlvKSAlaW4lIDM2OjM5IH4gIjMwJS08NDAlIiwKICAgIGFzLm51bWVyaWMoZGVidF90b19pbmNvbWVfcmF0aW8pICVpbiUgNDA6NDkgfiAiNDAlLTw1MCUiLAogICAgVFJVRSB+IGRlYnRfdG9faW5jb21lX3JhdGlvCiAgICApKQpgYGAKCmBgYHtyfQptb3J0Z2FnZV9sb2FuX3N1bW1hcnkgPC0gCiAgbW9ydGdhZ2VfbG9hbiAlPiUgCiAgZ3JvdXBfYnkoZGVyaXZlZF9yYWNlKSAlPiUKICBzdW1tYXJpemUoYXBwbGljYXRpb25fY291bnQgPSBuKCksIGRlbmlhbF9jb3VudCA9IHN1bShsb2FuX2FwcF9kZW5pZWQpKSAlPiUKICBtdXRhdGUocGN0X2RlbmlhbCA9IDEwMCpkZW5pYWxfY291bnQvYXBwbGljYXRpb25fY291bnQpCgptb3J0Z2FnZV9sb2FuX2RlYnRfc3VtbWFyeSA8LQogIG1vcnRnYWdlX2xvYW4gJT4lIAogIGdyb3VwX2J5KGRlcml2ZWRfcmFjZSwgZGVidF90b19pbmNvbWVfZ3JvdXApICU+JQogIHN1bW1hcml6ZShhcHBsaWNhdGlvbl9jb3VudCA9IG4oKSkKYGBgCgoKYGBge3J9Cm1vcnRnYWdlX2xvYW5fc3VtbWFyeSAlPiUgCiAgZ2dwbG90KGFlcyh5PWRlcml2ZWRfcmFjZSwgeD1wY3RfZGVuaWFsLCBmaWxsPWRlcml2ZWRfcmFjZSkpICsKICBnZW9tX2NvbCgpCmBgYAoKYGBge3J9Cm1vcnRnYWdlX2xvYW5fZGVidF9zdW1tYXJ5ICU+JSAKICBnZ3Bsb3QoYWVzKHk9YXBwbGljYXRpb25fY291bnQsIHg9ZGVidF90b19pbmNvbWVfZ3JvdXAsIGZpbGw9ZGVyaXZlZF9yYWNlKSkgKwogIGdlb21fY29sKHBvc2l0aW9uPSJkb2RnZSIpICsKICBzY2FsZV95X2NvbnRpbnVvdXModHJhbnMgPSAibG9nMTAiKSArCiAgdGhlbWUoYXhpcy50ZXh0LnggPSBlbGVtZW50X3RleHQoYW5nbGUgPSA0NSwgaGp1c3QgPSAxKSkgCgptb3J0Z2FnZV9sb2FuX2RlYnRfc3VtbWFyeSAlPiUgCiAgZ2dwbG90KGFlcyh5PWFwcGxpY2F0aW9uX2NvdW50LCB4PWRlYnRfdG9faW5jb21lX2dyb3VwLCBmaWxsPWRlcml2ZWRfcmFjZSkpICsKICBnZW9tX2NvbChwb3NpdGlvbj0iZG9kZ2UiKSArCiAgdGhlbWUoYXhpcy50ZXh0LnggPSBlbGVtZW50X3RleHQoYW5nbGUgPSA0NSwgaGp1c3QgPSAxKSkgCmBgYAoKYGBge3J9Cm1vcnRnYWdlX2xvYW5fZ2xtIDwtIAogIG1vcnRnYWdlX2xvYW4gJT4lCiAgZmlsdGVyKGRlYnRfdG9faW5jb21lX2dyb3VwICE9ICJFeGVtcHQiICYgIWlzLm5hKGRlYnRfdG9faW5jb21lX2dyb3VwKSwKICAgICAgICAgaW5jb21lID4gMCAmIGluY29tZSA8IDIwMCkKICAKZ2xtX2Z0IDwtIAogIGdsbShsb2FuX2FwcF9kZW5pZWQgfiAKICAgICAgICBmYWN0b3IoYXBwbGljYW50X2FnZSkgKyBmYWN0b3IoZGVidF90b19pbmNvbWVfZ3JvdXApICsgaW5jb21lICsgZmFjdG9yKGRlcml2ZWRfcmFjZSkgKyAKICAgICAgICBmYWN0b3IoZGVyaXZlZF9zZXgpIC0xLCAKICAgICAgZmFtaWx5ID0gYmlub21pYWwobGluayA9ICJsb2dpdCIpLAogICAgICBkYXRhID0gbW9ydGdhZ2VfbG9hbl9nbG0pCnN1bW1hcnkoZ2xtX2Z0KQpjb25maW50KGdsbV9mdCkKCmBgYAoKSW5jb21lIGlzIHNpZ25pZmljYW50IGJ5IGl0c2VsZgoKYGBge3J9CmdsbV9pbmNvbWUgPC0gCiAgZ2xtKGxvYW5fYXBwX2RlbmllZCB+IGluY29tZSwgCiAgICAgIGZhbWlseSA9IGJpbm9taWFsKGxpbmsgPSAibG9naXQiKSwKICAgICAgZGF0YSA9IG1vcnRnYWdlX2xvYW5fZ2xtKQpzdW1tYXJ5KGdsbV9pbmNvbWUpCmNvbmZpbnQoZ2xtX2luY29tZSkKYGBgCgoKCgo=</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKCmBgYHtyfQpsaWJyYXJ5KHRpZHl2ZXJzZSkKYGBgCgpgYGB7cn0KbG9hbiA8LSByZWFkX2Nzdigifi9Eb2N1bWVudHMvRGF0YSBTY2llbmNlIDIwMjIvTWlkIENvdXJzZSBQcm9qZWN0L0RhdGEvc3RhdGVfVE5fYWN0aW9uc190YWtlbi5jc3YiKQpgYGAKClRoZSBhbmFseXNpcyB3aWxsIHNvbGVseSBmb2N1cyBvbiBsb2FuIGFwcGxpY2F0aW9ucyBmb3IgdGhlIHB1cnBvc2Ugb2YgJ0hvbWUgUHVyY2hhc2UnIChsb2FuX3B1cnBvc2UgPT0gMSksICdOb3QgcHJpbWFyaWx5IGZvciBhIGJ1c2luZXNzIG9yIGNvbW1lcmNpYWwgcHVycG9zZScgKGJ1c2luZXNzX29yX2NvbW1lcmNpYWxfcHVycG9zZSA9PSAyKSwgT2NjdXBhbmN5IHR5cGUgZm9yIHRoZSBkd2VsbGluZyBpcyAiMSAtIFByaW5jaXBhbCByZXNpZGVuY2UiCgpgYGB7cn0KbW9ydGdhZ2VfbG9hbiA8LSBsb2FuICU+JQogIGZpbHRlcihsb2FuX3B1cnBvc2UgPT0gMSwgCiAgICAgICAgIGJ1c2luZXNzX29yX2NvbW1lcmNpYWxfcHVycG9zZSA9PSAyLAogICAgICAgICBvY2N1cGFuY3lfdHlwZSA9PSAxLAogICAgICAgICBhcHBsaWNhbnRfYWdlICE9ICI4ODg4IikgJT4lCiAgbXV0YXRlKGxvYW5fYXBwX2RlbmllZCA9IGlmZWxzZShhY3Rpb25fdGFrZW49PTMsMSwwKSkgJT4lCiAgbXV0YXRlKGRlYnRfdG9faW5jb21lX2dyb3VwID0gY2FzZV93aGVuKAogICAgZGVidF90b19pbmNvbWVfcmF0aW8gPT0gIjMwJS08MzYlIiB+ICIzMCUtPDQwJSIsCiAgICBhcy5udW1lcmljKGRlYnRfdG9faW5jb21lX3JhdGlvKSAlaW4lIDM2OjM5IH4gIjMwJS08NDAlIiwKICAgIGFzLm51bWVyaWMoZGVidF90b19pbmNvbWVfcmF0aW8pICVpbiUgNDA6NDkgfiAiNDAlLTw1MCUiLAogICAgVFJVRSB+IGRlYnRfdG9faW5jb21lX3JhdGlvCiAgICApKQpgYGAKCmBgYHtyfQptb3J0Z2FnZV9sb2FuX3N1bW1hcnkgPC0gCiAgbW9ydGdhZ2VfbG9hbiAlPiUgCiAgZ3JvdXBfYnkoZGVyaXZlZF9yYWNlKSAlPiUKICBzdW1tYXJpemUoYXBwbGljYXRpb25fY291bnQgPSBuKCksIGRlbmlhbF9jb3VudCA9IHN1bShsb2FuX2FwcF9kZW5pZWQpKSAlPiUKICBtdXRhdGUocGN0X2RlbmlhbCA9IDEwMCpkZW5pYWxfY291bnQvYXBwbGljYXRpb25fY291bnQpCgptb3J0Z2FnZV9sb2FuX2RlYnRfc3VtbWFyeSA8LQogIG1vcnRnYWdlX2xvYW4gJT4lIAogIGdyb3VwX2J5KGRlcml2ZWRfcmFjZSwgZGVidF90b19pbmNvbWVfZ3JvdXApICU+JQogIHN1bW1hcml6ZShhcHBsaWNhdGlvbl9jb3VudCA9IG4oKSkKYGBgCgoKYGBge3J9Cm1vcnRnYWdlX2xvYW5fc3VtbWFyeSAlPiUgCiAgZ2dwbG90KGFlcyh5PWRlcml2ZWRfcmFjZSwgeD1wY3RfZGVuaWFsLCBmaWxsPWRlcml2ZWRfcmFjZSkpICsKICBnZW9tX2NvbCgpCmBgYAoKYGBge3J9Cm1vcnRnYWdlX2xvYW5fZGVidF9zdW1tYXJ5ICU+JSAKICBnZ3Bsb3QoYWVzKHk9YXBwbGljYXRpb25fY291bnQsIHg9ZGVidF90b19pbmNvbWVfZ3JvdXAsIGZpbGw9ZGVyaXZlZF9yYWNlKSkgKwogIGdlb21fY29sKHBvc2l0aW9uPSJkb2RnZSIpICsKICBzY2FsZV95X2NvbnRpbnVvdXModHJhbnMgPSAibG9nMTAiKSArCiAgdGhlbWUoYXhpcy50ZXh0LnggPSBlbGVtZW50X3RleHQoYW5nbGUgPSA0NSwgaGp1c3QgPSAxKSkgCgptb3J0Z2FnZV9sb2FuX2RlYnRfc3VtbWFyeSAlPiUgCiAgZ2dwbG90KGFlcyh5PWFwcGxpY2F0aW9uX2NvdW50LCB4PWRlYnRfdG9faW5jb21lX2dyb3VwLCBmaWxsPWRlcml2ZWRfcmFjZSkpICsKICBnZW9tX2NvbChwb3NpdGlvbj0iZG9kZ2UiKSArCiAgdGhlbWUoYXhpcy50ZXh0LnggPSBlbGVtZW50X3RleHQoYW5nbGUgPSA0NSwgaGp1c3QgPSAxKSkgCmBgYAoKYGBge3J9Cm1vcnRnYWdlX2xvYW5fZ2xtIDwtIAogIG1vcnRnYWdlX2xvYW4gJT4lCiAgZmlsdGVyKGRlYnRfdG9faW5jb21lX2dyb3VwICE9ICJFeGVtcHQiICYgIWlzLm5hKGRlYnRfdG9faW5jb21lX2dyb3VwKSwKICAgICAgICAgaW5jb21lID4gMCAmIGluY29tZSA8IDIwMCkKICAKZ2xtX2Z0IDwtIAogIGdsbShsb2FuX2FwcF9kZW5pZWQgfiAKICAgICAgICBmYWN0b3IoYXBwbGljYW50X2FnZSkgKyBmYWN0b3IoZGVidF90b19pbmNvbWVfZ3JvdXApICsgaW5jb21lICsgZmFjdG9yKGRlcml2ZWRfcmFjZSkgKyAKICAgICAgICBmYWN0b3IoZGVyaXZlZF9zZXgpIC0xLCAKICAgICAgZmFtaWx5ID0gYmlub21pYWwobGluayA9ICJsb2dpdCIpLAogICAgICBkYXRhID0gbW9ydGdhZ2VfbG9hbl9nbG0pCnN1bW1hcnkoZ2xtX2Z0KQoKCgptb3J0Z2FnZV9sb2FuX2dsbSRnbG1fZnRfcHJlZGljdCA8LSAKICBpZmVsc2UocHJlZGljdChnbG1fZnQsIG1vcnRnYWdlX2xvYW5fZ2xtLCB0eXBlID0gInJlc3BvbnNlIikgPCAwLjUsIDAsIDEpCgoxMDAqdGFibGUobW9ydGdhZ2VfbG9hbl9nbG0kZ2xtX2Z0X3ByZWRpY3Q9PW1vcnRnYWdlX2xvYW5fZ2xtJGxvYW5fYXBwX2RlbmllZCkvbnJvdyhtb3J0Z2FnZV9sb2FuX2dsbSkKYGBgCgoKSW5jb21lIGlzIHNpZ25pZmljYW50IGJ5IGl0c2VsZgoKYGBge3J9CmdsbV9pbmNvbWUgPC0gCiAgZ2xtKGxvYW5fYXBwX2RlbmllZCB+IGluY29tZSwgCiAgICAgIGZhbWlseSA9IGJpbm9taWFsKGxpbmsgPSAibG9naXQiKSwKICAgICAgZGF0YSA9IG1vcnRnYWdlX2xvYW5fZ2xtKQpzdW1tYXJ5KGdsbV9pbmNvbWUpCmNvbmZpbnQoZ2xtX2luY29tZSkKCmdsbV9pbmNvbWVfcHJlZGljdCA8LSAKICBwcmVkaWN0KGdsbV9pbmNvbWUsIG1vcnRnYWdlX2xvYW5fZ2xtKQoKbW9ydGdhZ2VfbG9hbl9nbG0kZ2xtX2luY29tZV9wcmVkaWN0IDwtIAogIGlmZWxzZShwcmVkaWN0KGdsbV9pbmNvbWUsIG1vcnRnYWdlX2xvYW5fZ2xtLCB0eXBlID0gInJlc3BvbnNlIikgPCAwLjUsIDAsIDEpCgoxMDAqdGFibGUobW9ydGdhZ2VfbG9hbl9nbG0kZ2xtX2luY29tZV9wcmVkaWN0PT1tb3J0Z2FnZV9sb2FuX2dsbSRsb2FuX2FwcF9kZW5pZWQpL25yb3cobW9ydGdhZ2VfbG9hbl9nbG0pCmBgYAoKCgoK</div>
 
 
 
