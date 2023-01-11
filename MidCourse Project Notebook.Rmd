@@ -76,7 +76,7 @@ glm_ft <-
       data = mortgage_loan_glm)
 summary(glm_ft)
 
-
+save(glm_ft, file = '/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Data/glm_ft')
 
 mortgage_loan_glm$glm_ft_predict <- 
   ifelse(predict(glm_ft, mortgage_loan_glm, type = "response") < 0.5, 0, 1)
@@ -103,6 +103,26 @@ mortgage_loan_glm$glm_income_predict <-
 
 100*table(mortgage_loan_glm$glm_income_predict==mortgage_loan_glm$loan_app_denied)/nrow(mortgage_loan_glm)
 ```
+
+```{r}
+glm_race <- 
+  glm(loan_app_denied ~ factor(derived_race), 
+      family = binomial(link = "logit"),
+      data = mortgage_loan_glm)
+summary(glm_race)
+confint(glm_race)
+
+glm_race_predict <- 
+  predict(glm_race, mortgage_loan_glm)
+
+mortgage_loan_glm$glm_race_predict <- 
+  ifelse(predict(glm_race, mortgage_loan_glm, type = "response") < 0.5, 0, 1)
+
+save(glm_race, file = '/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Data/glm_race')
+
+100*table(mortgage_loan_glm$glm_race_predict==mortgage_loan_glm$loan_app_denied)/nrow(mortgage_loan_glm)
+```
+
 
 
 

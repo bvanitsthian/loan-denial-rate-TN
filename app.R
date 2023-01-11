@@ -13,7 +13,7 @@ library(shiny)
 ui <- fluidPage(
 
     # Application title
-    titlePanel("Old Faithful Geyser Data"),
+    titlePanel("Chances of denial"),
 
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
@@ -24,7 +24,33 @@ ui <- fluidPage(
                              "Asian",
                              "Black or African American",
                              "American Indian or Alaska Native",
-                             "Native Hawaiian or Other Pacific Islander"))
+                             "Native Hawaiian or Other Pacific Islander")),
+            selectInput("DTI",
+                        "select your Debt to Income group",
+                        list("<20%",
+                             "20%-<30%",
+                             "30%-<40%",
+                             "40%-<50%",
+                             "50%-60%",
+                             ">60%")),
+            selectInput("Age",
+                        "select your age group",
+                        list("<25",
+                             "25-34",
+                             "35-44",
+                             "45-54",
+                             "55-64",
+                             "65-74",
+                             ">74")),
+            numericInput("Income",
+                        "select your annual income in 1000 USD",
+                        50),
+            selectInput("Sex",
+                        "select your birth sex",
+                        list("Male",
+                             "Female",
+                             "Joint",
+                             "Sex Not Available"))
         ),
 
         # Show a plot of the generated distribution
@@ -36,43 +62,25 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-
-    loan <- read_csv("~/Documents/Data Science 2022/Mid Course Project/Data/state_TN_actions_taken.csv")
-    mortgage_loan <- loan %>%
-      filter(loan_purpose == 1, 
-             business_or_commercial_purpose == 2,
-             occupancy_type == 1,
-             applicant_age != "8888") %>%
-      mutate(loan_app_denied = ifelse(action_taken==3,1,0)) %>%
-      mutate(debt_to_income_group = case_when(
-        debt_to_income_ratio == "30%-<36%" ~ "30%-<40%",
-        as.numeric(debt_to_income_ratio) %in% 36:39 ~ "30%-<40%",
-        as.numeric(debt_to_income_ratio) %in% 40:49 ~ "40%-<50%",
-        TRUE ~ debt_to_income_ratio
-      ))
-    mortgage_loan_glm <- 
-      mortgage_loan %>%
-      filter(debt_to_income_group != "Exempt" & !is.na(debt_to_income_group),
-             income > 0 & income < 200)
     
-    glm_ft <- 
-      glm(loan_app_denied ~ 
-           # factor(applicant_age) + factor(debt_to_income_group) + income + factor(derived_sex) +
-            factor(derived_race) -1, 
-          family = binomial(link = "logit"),
-          data = mortgage_loan_glm)
-    #summary(glm_ft)
-    
-    current_race <- reactive(input$Race)
-    user_data <- data.frame(derived_race = factor(current_race))
-    
-    mortgage_loan_glm$glm_ft_predict <- 
-      predict(glm_ft, user_data, type = "response") 
+     load('/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Data/glm_ft')
     
     output$text <- renderText({
-      paste0("You have a ", x ," probability of being denied a mortgage loan in TN")
+      
+      user_data <- data.frame(derived_race = factor(input$Race),
+                              debt_to_income_group = factor(input$DTI),
+                              derived_sex = factor(input$Sex),
+                              applicant_age = factor(input$Age),
+                              income = input$Income)
+
+      x <-
+        predict(glm_ft, user_data, type = "response")
+      paste0("You have a ", 100*round(x, digits = 2),"% probability of being denied a mortgage loan in TN")
+
+
     })
     
+  
     
     
     
