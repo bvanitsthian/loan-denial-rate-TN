@@ -13,20 +13,20 @@ library(shiny)
 ui <- fluidPage(
 
     # Application title
-    titlePanel("Chances of denial"),
+    titlePanel("Mortgage Loan Approval Probability Calculator in Tennessee"),
 
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
             selectInput("Race",
-                        "select your race",
+                        "Select your race",
                         list("White",
                              "Asian",
                              "Black or African American",
                              "American Indian or Alaska Native",
                              "Native Hawaiian or Other Pacific Islander")),
             selectInput("DTI",
-                        "select your Debt to Income group",
+                        "Select your Debt to Income group",
                         list("<20%",
                              "20%-<30%",
                              "30%-<40%",
@@ -34,7 +34,7 @@ ui <- fluidPage(
                              "50%-60%",
                              ">60%")),
             selectInput("Age",
-                        "select your age group",
+                        "Select your age group",
                         list("<25",
                              "25-34",
                              "35-44",
@@ -43,20 +43,28 @@ ui <- fluidPage(
                              "65-74",
                              ">74")),
             numericInput("Income",
-                        "select your annual income in 1000 USD",
+                        "Select your annual income (x 1000 USD)",
                         50),
             selectInput("Sex",
-                        "select your birth sex",
+                        "Select your birth sex",
                         list("Male",
                              "Female",
                              "Joint",
-                             "Sex Not Available"))
+                             "Sex Not Available")),
+            selectInput("Graph_Var",
+                        "Select your variable",
+                        list("derived_race",
+                             "applicant_age",
+                             "derived_sex"))
+            
         ),
 
         # Show a plot of the generated distribution
         mainPanel(
-           textOutput("text")
+            textOutput("text"),
+            plotOutput("distPlot")
         )
+         
     )
 )
 
@@ -64,6 +72,7 @@ ui <- fluidPage(
 server <- function(input, output) {
     
      load('/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Data/glm_ft')
+     load('/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Data/mortgage_loan_denial_reasons')
     
     output$text <- renderText({
       
@@ -74,26 +83,20 @@ server <- function(input, output) {
                               income = input$Income)
 
       x <-
-        predict(glm_ft, user_data, type = "response")
-      paste0("You have a ", 100*round(x, digits = 2),"% probability of being denied a mortgage loan in TN")
-
+        predict(glm_ft, user_data, type = "response", se.fit = T)
+      #paste0("You have a ", 100*round(1-x$fit, digits = 2),"% probability of being approved a mortgage loan in TN")
+      paste0("You have between a ", 100*round(1-(x$fit+x$se.fit), digits = 2), 
+      " and a ", 100*round(1-(x$fit-x$se.fit), digits = 2),
+      "% probability of being approved a mortgage loan in TN")
+      
 
     })
-    
-  
-    
-    
-    
-    # output$distPlot <- renderPlot({
-    #     # generate bins based on input$bins from ui.R
-    #     x    <- faithful[, 2]
-    #     bins <- seq(min(x), max(x), length.out = input$bins + 1)
-    # 
-    #     # draw the histogram with the specified number of bins
-    #     hist(x, breaks = bins, col = 'darkgray', border = 'white',
-    #          xlab = 'Waiting time to next eruption (in mins)',
-    #          main = 'Histogram of waiting times')
-    # })
+
+    output$distPlot <- renderPlot({
+        ggplot(mortgage_loan_denial_reasons) +
+        geom_col(aes(x=denial_reason_code, fill=factor(input$Graph_Var)), position="dodge")
+
+    })
 }
 
 # Run the application 

@@ -61,6 +61,82 @@ mortgage_loan_debt_summary %>%
   geom_col(position="dodge") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
 ```
+1 - Debt-to-income ratio
+2 - Employment history
+3 - Credit history
+4 - Collateral
+5 - Insufficient cash (downpayment, closing costs)
+6 - Unverifiable information
+7 - Credit application incomplete
+8 - Mortgage insurance denied
+9 - Other
+10 - Not applicable
+
+```{r}
+denial_reasons <- 
+  data.frame(denial_reason_code=1:10,
+             denial_reason_text=c("Debt-to-income ratio",
+                                  "Employment history",
+                                  "Credit history",
+                                  "Collateral",
+                                  "Insufficient cash\n (downpayment, closing costs)",
+                                  "Unverifiable information",
+                                  "Credit application\n incomplete",
+                                  "Mortgage insurance denied",
+                                  "Other",
+                                  "NA"))
+total_race_denial_count <- 
+  mortgage_loan %>%
+  filter(loan_app_denied==1) %>%
+  group_by(derived_race) %>%
+  summarize(total_denials_by_race = n())
+
+mortgage_loan_denial_reasons <- 
+  mortgage_loan %>%
+  select(applicant_age, derived_race, 
+         derived_sex, `denial_reason-1`, `denial_reason-2`, `denial_reason-3`, `denial_reason-4`) %>%
+  pivot_longer(cols = c(`denial_reason-1`, `denial_reason-2`, `denial_reason-3`, `denial_reason-4`),
+               values_to = "denial_reason_code") %>%
+  filter(is.na(denial_reason_code)==F, denial_reason_code!=1111) %>%
+  group_by(applicant_age, derived_race, derived_sex, denial_reason_code) %>%
+  summarize(denial_reason_count = n()) %>%
+  left_join(denial_reasons, by = "denial_reason_code") %>%
+  left_join(total_race_denial_count, by = "derived_race") %>%
+  mutate(pct_race_denial = round(100*(denial_reason_count/total_denials_by_race),2))
+
+
+
+save(mortgage_loan_denial_reasons, file = '/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Data/mortgage_loan_denial_reasons')
+```
+Still need to fix 
+
+```{r}
+ggplot(mortgage_loan_denial_reasons) +
+    facet_wrap(~derived_race, ncol = 1) +
+    #geom_bar(aes(x=factor(denial_reason_text), fill=factor(derived_race)), position="dodge") +
+    geom_col(aes(x=factor(denial_reason_text), y=pct_race_denial, fill=factor(derived_race)), show.legend = F) +
+    theme(axis.text.x = element_text(angle=60,hjust=1)) +
+    scale_x_discrete(name = "Denial Reasons") +
+    scale_y_continuous(name = "Denial Frequency") 
+    #scale_fill_discrete(name = "Race")
+```
+
+```{r}
+ggplot(mortgage_loan_denial_reasons) +
+    facet_wrap(~derived_race, ncol = 1) +
+    #geom_bar(aes(x=factor(denial_reason_text), fill=factor(derived_race)), position="dodge") +
+    geom_bar(aes(x=factor(denial_reason_text), fill=factor(derived_race)), show.legend = F) +
+    theme(axis.text.x = element_text(angle=60,hjust=1)) +
+    scale_x_discrete(name = "Denial Reasons") +
+    scale_y_continuous(name = "Denial Frequency") 
+    #scale_fill_discrete(name = "Race")
+```
+
+```{r}
+mortgage_loan$num_reasons <- apply(mortgage_loan[c("denial_reason-1", "denial_reason-2", "denial_reason-3", "denial_reason-4")], 1,function(x){length(grep(F,is.na(x)))})
+```
+
+
 
 ```{r}
 mortgage_loan_glm <- 
@@ -81,8 +157,26 @@ save(glm_ft, file = '/Users/thidathornvanitsthian/Documents/Data Science 2022/lo
 mortgage_loan_glm$glm_ft_predict <- 
   ifelse(predict(glm_ft, mortgage_loan_glm, type = "response") < 0.5, 0, 1)
 
+
+#Confusion Matrix
+table(mortgage_loan_glm[c("loan_app_denied","glm_ft_predict")])
+#https://www.statology.org/confusion-matrix-in-r/
+
 100*table(mortgage_loan_glm$glm_ft_predict==mortgage_loan_glm$loan_app_denied)/nrow(mortgage_loan_glm)
 ```
+
+
+Create CI for predictions 
+
+```{r}
+glm_ft_prediction <- 
+  predict(glm_ft, mortgage_loan_glm, type = "response", se.fit = T)
+
+summary(glm_ft_prediction$fit - glm_ft_prediction$se.fit)
+summary(glm_ft_prediction$fit + glm_ft_prediction$se.fit)
+
+```
+
 
 
 Income is significant by itself
@@ -101,7 +195,9 @@ glm_income_predict <-
 mortgage_loan_glm$glm_income_predict <- 
   ifelse(predict(glm_income, mortgage_loan_glm, type = "response") < 0.5, 0, 1)
 
+
 100*table(mortgage_loan_glm$glm_income_predict==mortgage_loan_glm$loan_app_denied)/nrow(mortgage_loan_glm)
+
 ```
 
 ```{r}
@@ -122,6 +218,25 @@ save(glm_race, file = '/Users/thidathornvanitsthian/Documents/Data Science 2022/
 
 100*table(mortgage_loan_glm$glm_race_predict==mortgage_loan_glm$loan_app_denied)/nrow(mortgage_loan_glm)
 ```
+
+```{r}
+glm_DTI <- 
+  glm(loan_app_denied ~ factor(debt_to_income_group), 
+      family = binomial(link = "logit"),
+      data = mortgage_loan_glm)
+summary(glm_DTI)
+confint(glm_DTI)
+
+glm_DTI_predict <- 
+  predict(glm_DTI, mortgage_loan_glm)
+
+mortgage_loan_glm$glm_DTI_predict <- 
+  ifelse(predict(glm_DTI, mortgage_loan_glm, type = "response") < 0.5, 0, 1)
+
+
+100*table(mortgage_loan_glm$glm_race_predict==mortgage_loan_glm$loan_app_denied)/nrow(mortgage_loan_glm)
+```
+
 
 
 
