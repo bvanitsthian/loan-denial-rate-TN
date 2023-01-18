@@ -1,17 +1,13 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
+library(bslib)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
 
+    # Set Tabs
+    tabsetPanel(
+      tabPanel("TAB 1",
+  
     # Application title
     titlePanel("Mortgage Loan Approval Probability Calculator in Tennessee"),
 
@@ -46,27 +42,39 @@ ui <- fluidPage(
                         "Select your annual income (x 1000 USD)",
                         50),
             selectInput("Sex",
-                        "Select your birth sex",
+                        "Select your birth sex or select 'Joint' if filing together",
                         list("Male",
                              "Female",
                              "Joint",
-                             "Sex Not Available")),
-            selectInput("Graph_Var",
-                        "Select your variable",
-                        list("derived_race",
-                             "applicant_age",
-                             "derived_sex"))
-            
+                             "Sex Not Available"))
         ),
 
         # Show a plot of the generated distribution
         mainPanel(
-            textOutput("text"),
+            textOutput("text")
+        ))),
+        
+    tabPanel("TAB 2",
+             
+             # Application title
+             titlePanel("Mortgage Loan Approval Probability Calculator in Tennessee"),
+             
+             # Sidebar with a slider input for number of bins 
+             sidebarLayout(
+               sidebarPanel(
+                 selectInput("Graph_Var",
+                             "Select your variable",
+                             list("race",
+                                  "age",
+                                  "sex"))
+               ),
+        mainPanel(
             plotOutput("distPlot")
-        )
-         
+      )
     )
-)
+)), theme=bs_theme(version = 5, bootswatch = "lux",  bg= "#101010", fg= "#FDF7F7", primary = "#ED79F9", 
+                   base_font = font_google("Prompt"),
+                   code_font = font_google("JetBrains Mono")))
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
@@ -93,9 +101,11 @@ server <- function(input, output) {
     })
 
     output$distPlot <- renderPlot({
-        ggplot(mortgage_loan_denial_reasons) +
-        geom_col(aes(x=denial_reason_code, fill=factor(input$Graph_Var)), position="dodge")
-
+      load(paste0('/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Data/plot_',
+                  input$Graph_Var)
+    )
+      get(paste0('plot_',input$Graph_Var))
+      
     })
 }
 

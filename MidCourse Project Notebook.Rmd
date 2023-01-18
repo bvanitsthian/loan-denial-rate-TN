@@ -12,14 +12,14 @@ library(tidyverse)
 loan <- read_csv("~/Documents/Data Science 2022/Mid Course Project/Data/state_TN_actions_taken.csv")
 ```
 
-The analysis will solely focus on loan applications for the purpose of 'Home Purchase' (loan_purpose == 1), 'Not primarily for a business or commercial purpose' (business_or_commercial_purpose == 2), Occupancy type for the dwelling is "1 - Principal residence"
+The analysis focuses on loan applications for the purpose of 'Home Purchase' (loan_purpose == 1), 'Not primarily for a business or commercial purpose' (business_or_commercial_purpose == 2), Occupancy type for the dwelling is "1 - Principal residence", and all loan type except "Veterans Affairs guaranteed (VA)" (loan_type!=3)
 
 ```{r}
 mortgage_loan <- loan %>%
   filter(loan_purpose == 1, 
          business_or_commercial_purpose == 2,
          occupancy_type == 1,
-         applicant_age != "8888") %>%
+         loan_type != 3, applicant_age != "8888") %>%
   mutate(loan_app_denied = ifelse(action_taken==3,1,0)) %>%
   mutate(debt_to_income_group = case_when(
     debt_to_income_ratio == "30%-<36%" ~ "30%-<40%",
@@ -29,8 +29,16 @@ mortgage_loan <- loan %>%
     ))
 ```
 
+
 ```{r}
 mortgage_loan_summary <- 
+  mortgage_loan %>% 
+  group_by(derived_race) %>%
+  summarize(application_count = n(), denial_count = sum(loan_app_denied)) %>%
+  mutate(pct_denial = 100*denial_count/application_count) %>%
+  filter(derived_race != c("American Indian or Alaska Native","Native Hawaiian or Other Pacific Islander"))
+
+mortgage_loan_summary_allraces <- 
   mortgage_loan %>% 
   group_by(derived_race) %>%
   summarize(application_count = n(), denial_count = sum(loan_app_denied)) %>%
@@ -39,14 +47,19 @@ mortgage_loan_summary <-
 mortgage_loan_debt_summary <-
   mortgage_loan %>% 
   group_by(derived_race, debt_to_income_group) %>%
-  summarize(application_count = n())
+  summarize(application_count = n()) %>%
+  filter(derived_race != "American Indian or Alaska Native" & derived_race != "Native Hawaiian or Other Pacific Islander")
 ```
 
+For the purpose of this analysis, the following plot ignores "American Indian or Alaska Native" and "Native Hawaiian or Other Pacific Islander" because they make up less than 0.01% of total mortgage applications. 
 
 ```{r}
 mortgage_loan_summary %>% 
-  ggplot(aes(y=derived_race, x=pct_denial, fill=derived_race)) +
-  geom_col()
+  ggplot(aes(x=derived_race, y=pct_denial, fill=derived_race)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+  scale_x_discrete(name = "Race") +
+  scale_y_continuous(name = "% Denial") 
 ```
 
 ```{r}
@@ -54,7 +67,10 @@ mortgage_loan_debt_summary %>%
   ggplot(aes(y=application_count, x=debt_to_income_group, fill=derived_race)) +
   geom_col(position="dodge") +
   scale_y_continuous(trans = "log10") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  xlab("Debt-to-Income (DTI) Groups") +
+  ylab("Total Mortgage Applications") +
+  ggtitle("DTI by Race")
 
 mortgage_loan_debt_summary %>% 
   ggplot(aes(y=application_count, x=debt_to_income_group, fill=derived_race)) +
@@ -91,35 +107,89 @@ total_race_denial_count <-
   group_by(derived_race) %>%
   summarize(total_denials_by_race = n())
 
-mortgage_loan_denial_reasons <- 
+total_age_denial_count <- 
   mortgage_loan %>%
-  select(applicant_age, derived_race, 
-         derived_sex, `denial_reason-1`, `denial_reason-2`, `denial_reason-3`, `denial_reason-4`) %>%
+  filter(loan_app_denied==1) %>%
+  group_by(applicant_age) %>%
+  summarize(total_denials_by_age = n())
+
+total_sex_denial_count <- 
+  mortgage_loan %>%
+  filter(loan_app_denied==1) %>%
+  group_by(derived_sex) %>%
+  summarize(total_denials_by_sex = n())
+
+
+denial_reasons_count_by_race <-
+  mortgage_loan %>%
+  select(loan_app_denied, derived_race, `denial_reason-1`, `denial_reason-2`, `denial_reason-3`, `denial_reason-4`) %>%
   pivot_longer(cols = c(`denial_reason-1`, `denial_reason-2`, `denial_reason-3`, `denial_reason-4`),
                values_to = "denial_reason_code") %>%
-  filter(is.na(denial_reason_code)==F, denial_reason_code!=1111) %>%
-  group_by(applicant_age, derived_race, derived_sex, denial_reason_code) %>%
+  filter(is.na(denial_reason_code)==F, denial_reason_code!=1111, loan_app_denied == 1) %>%
+  group_by(derived_race, denial_reason_code) %>%
   summarize(denial_reason_count = n()) %>%
   left_join(denial_reasons, by = "denial_reason_code") %>%
   left_join(total_race_denial_count, by = "derived_race") %>%
   mutate(pct_race_denial = round(100*(denial_reason_count/total_denials_by_race),2))
 
+denial_reasons_count_by_age <-
+  mortgage_loan %>%
+  select(loan_app_denied, applicant_age, `denial_reason-1`, `denial_reason-2`, `denial_reason-3`, `denial_reason-4`) %>%
+  pivot_longer(cols = c(`denial_reason-1`, `denial_reason-2`, `denial_reason-3`, `denial_reason-4`),
+               values_to = "denial_reason_code") %>%
+  filter(is.na(denial_reason_code)==F, denial_reason_code!=1111, loan_app_denied == 1) %>%
+  group_by(applicant_age, denial_reason_code) %>%
+  summarize(denial_reason_count = n()) %>%
+  left_join(denial_reasons, by = "denial_reason_code") %>%
+  left_join(total_age_denial_count, by = "applicant_age") %>%
+  mutate(pct_age_denial = round(100*(denial_reason_count/total_denials_by_age),2))
 
+denial_reasons_count_by_sex <-
+  mortgage_loan %>%
+  select(loan_app_denied, derived_sex, `denial_reason-1`, `denial_reason-2`, `denial_reason-3`, `denial_reason-4`) %>%
+  pivot_longer(cols = c(`denial_reason-1`, `denial_reason-2`, `denial_reason-3`, `denial_reason-4`),
+               values_to = "denial_reason_code") %>%
+  filter(is.na(denial_reason_code)==F, denial_reason_code!=1111, loan_app_denied == 1) %>%
+  group_by(derived_sex, denial_reason_code) %>%
+  summarize(denial_reason_count = n()) %>%
+  left_join(denial_reasons, by = "denial_reason_code") %>%
+  left_join(total_sex_denial_count, by = "derived_sex") %>%
+  mutate(pct_sex_denial = round(100*(denial_reason_count/total_denials_by_sex),2))
 
 save(mortgage_loan_denial_reasons, file = '/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Data/mortgage_loan_denial_reasons')
 ```
-Still need to fix 
+Facet Wrap ggplot Denial % By Race, Age, Sex
 
 ```{r}
-ggplot(mortgage_loan_denial_reasons) +
+plot_race <- ggplot(denial_reasons_count_by_race) +
     facet_wrap(~derived_race, ncol = 1) +
-    #geom_bar(aes(x=factor(denial_reason_text), fill=factor(derived_race)), position="dodge") +
     geom_col(aes(x=factor(denial_reason_text), y=pct_race_denial, fill=factor(derived_race)), show.legend = F) +
     theme(axis.text.x = element_text(angle=60,hjust=1)) +
     scale_x_discrete(name = "Denial Reasons") +
-    scale_y_continuous(name = "Denial Frequency") 
-    #scale_fill_discrete(name = "Race")
+    scale_y_continuous(name = "% Denial by Race") 
+  
+save(plot_race, file = '/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Data/plot_race')
+
+plot_age <- ggplot(denial_reasons_count_by_age) +
+    facet_wrap(~applicant_age, ncol = 1) +
+    geom_col(aes(x=factor(denial_reason_text), y=pct_age_denial, fill=factor(applicant_age)), show.legend = F) +
+    theme(axis.text.x = element_text(angle=60,hjust=1)) +
+    scale_x_discrete(name = "Denial Reasons") +
+    scale_y_continuous(name = "% Denial by Age Group") 
+
+save(plot_age, file = '/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Data/plot_age')
+
+plot_sex <- ggplot(denial_reasons_count_by_sex) +
+    facet_wrap(~derived_sex, ncol = 1) +
+    geom_col(aes(x=factor(denial_reason_text), y=pct_sex_denial, fill=factor(derived_sex)), show.legend = F) +
+    theme(axis.text.x = element_text(angle=60,hjust=1)) +
+    scale_x_discrete(name = "Denial Reasons") +
+    scale_y_continuous(name = "% Denial by Sex") 
+
+save(plot_sex, file = '/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Data/plot_sex')
+
 ```
+Facet Wrap ggplot Denial Count By Race, Age, Sex
 
 ```{r}
 ggplot(mortgage_loan_denial_reasons) +
@@ -136,13 +206,14 @@ ggplot(mortgage_loan_denial_reasons) +
 mortgage_loan$num_reasons <- apply(mortgage_loan[c("denial_reason-1", "denial_reason-2", "denial_reason-3", "denial_reason-4")], 1,function(x){length(grep(F,is.na(x)))})
 ```
 
-
+Logit Model: Age, DTI, Income, Race, Sex
 
 ```{r}
 mortgage_loan_glm <- 
   mortgage_loan %>%
   filter(debt_to_income_group != "Exempt" & !is.na(debt_to_income_group),
-         income > 0 & income < 200)
+         income > 0 & income < 200,
+         loan_amount < 500000)
   
 glm_ft <- 
   glm(loan_app_denied ~ 
@@ -166,7 +237,7 @@ table(mortgage_loan_glm[c("loan_app_denied","glm_ft_predict")])
 ```
 
 
-Create CI for predictions 
+Create CI for predictions of glm_ft (Logit Model: Age, DTI, Income, Race, Sex)
 
 ```{r}
 glm_ft_prediction <- 
@@ -175,6 +246,36 @@ glm_ft_prediction <-
 summary(glm_ft_prediction$fit - glm_ft_prediction$se.fit)
 summary(glm_ft_prediction$fit + glm_ft_prediction$se.fit)
 
+```
+
+Logit Model: Age, DTI, Income, Race, Sex, Loan Amount
+
+```{r}
+glm_ft1 <- 
+  glm(loan_app_denied ~ 
+        factor(applicant_age) + factor(debt_to_income_group) + income + loan_amount +factor(derived_race) + 
+        factor(derived_sex) -1, 
+      family = binomial(link = "logit"),
+      data = mortgage_loan_glm)
+summary(glm_ft1)
+
+mortgage_loan_glm$glm_ft1_predict <- 
+  ifelse(predict(glm_ft1, mortgage_loan_glm, type = "response") < 0.5, 0, 1)
+
+table(mortgage_loan_glm[c("loan_app_denied","glm_ft1_predict")])
+100*table(mortgage_loan_glm$glm_ft1_predict==mortgage_loan_glm$loan_app_denied)/nrow(mortgage_loan_glm)
+
+save(glm_ft1, file = '/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Data/glm_ft1')
+```
+
+Create CI for predictions of glm_ft1 (Logit Model: Age, DTI, Income, Race, Sex, Loan Amount)
+
+```{r}
+glm_ft1_prediction <- 
+  predict(glm_ft1, mortgage_loan_glm, type = "response", se.fit = T)
+
+summary(glm_ft1_prediction$fit - glm_ft_prediction$se.fit)
+summary(glm_ft1_prediction$fit + glm_ft_prediction$se.fit)
 ```
 
 

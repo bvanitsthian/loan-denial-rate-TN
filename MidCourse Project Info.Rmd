@@ -2,7 +2,15 @@
 title: "Tennessee Loan Denial Indicators"
 author: "Bua Matthews"
 date: "`r Sys.Date()`"
-output: html_document
+output:  html_document:
+    theme:
+      bg: "#101010"
+      fg: "#FDF7F7"
+      primary: "#ED79F9"
+      base_font:
+        google: "Prompt"
+      code_font:
+        google: "JetBrains Mono"
 ---
 
 ```{r setup, include=FALSE}
