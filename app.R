@@ -57,7 +57,7 @@ ui <- fluidPage(
     tabPanel("TAB 2",
              
              # Application title
-             titlePanel("Mortgage Loan Approval Probability Calculator in Tennessee"),
+             titlePanel("Breakdown of Denial Reasons by Race, Age, Sex"),
              
              # Sidebar with a slider input for number of bins 
              sidebarLayout(
@@ -79,8 +79,11 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
     
-     load('/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Data/glm_ft')
-     load('/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Data/mortgage_loan_denial_reasons')
+     # load('/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Data/glm_ft')
+     # load('/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Data/mortgage_loan_denial_reasons')
+  
+       load('/Data/glm_ft')
+       load('/Data/mortgage_loan_denial_reasons')
     
     output$text <- renderText({
       
@@ -100,9 +103,12 @@ server <- function(input, output) {
 
     })
 
-    output$distPlot <- renderPlot({
-      load(paste0('/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Data/plot_',
-                  input$Graph_Var)
+    # output$distPlot <- renderPlot({
+    #   load(paste0('/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Data/plot_',
+    #               input$Graph_Var)
+      output$distPlot <- renderPlot({
+        load(paste0('Data/plot_',
+                    input$Graph_Var)       
     )
       get(paste0('plot_',input$Graph_Var))
       

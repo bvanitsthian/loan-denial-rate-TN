@@ -125,7 +125,8 @@ denial_reasons_count_by_race <-
   select(loan_app_denied, derived_race, `denial_reason-1`, `denial_reason-2`, `denial_reason-3`, `denial_reason-4`) %>%
   pivot_longer(cols = c(`denial_reason-1`, `denial_reason-2`, `denial_reason-3`, `denial_reason-4`),
                values_to = "denial_reason_code") %>%
-  filter(is.na(denial_reason_code)==F, denial_reason_code!=1111, loan_app_denied == 1) %>%
+  filter(is.na(denial_reason_code)==F, denial_reason_code!=1111, 
+         loan_app_denied == 1, derived_race %in% c("White","Asian","Black or African American")) %>%
   group_by(derived_race, denial_reason_code) %>%
   summarize(denial_reason_count = n()) %>%
   left_join(denial_reasons, by = "denial_reason_code") %>%
@@ -149,7 +150,7 @@ denial_reasons_count_by_sex <-
   select(loan_app_denied, derived_sex, `denial_reason-1`, `denial_reason-2`, `denial_reason-3`, `denial_reason-4`) %>%
   pivot_longer(cols = c(`denial_reason-1`, `denial_reason-2`, `denial_reason-3`, `denial_reason-4`),
                values_to = "denial_reason_code") %>%
-  filter(is.na(denial_reason_code)==F, denial_reason_code!=1111, loan_app_denied == 1) %>%
+  filter(is.na(denial_reason_code)==F, denial_reason_code!=1111, loan_app_denied == 1, derived_sex != "Sex Not Available") %>%
   group_by(derived_sex, denial_reason_code) %>%
   summarize(denial_reason_count = n()) %>%
   left_join(denial_reasons, by = "denial_reason_code") %>%
@@ -158,7 +159,7 @@ denial_reasons_count_by_sex <-
 
 save(mortgage_loan_denial_reasons, file = '/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Data/mortgage_loan_denial_reasons')
 ```
-Facet Wrap ggplot Denial % By Race, Age, Sex
+Facet Wrap ggplot % Denial by Race, Age, Sex
 
 ```{r}
 plot_race <- ggplot(denial_reasons_count_by_race) +
@@ -170,12 +171,19 @@ plot_race <- ggplot(denial_reasons_count_by_race) +
   
 save(plot_race, file = '/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Data/plot_race')
 
+# plot_age <- ggplot(denial_reasons_count_by_age) +
+#     facet_wrap(~applicant_age, ncol = 1) +
+#     geom_col(aes(x=factor(denial_reason_text), y=pct_age_denial, fill=factor(applicant_age)), show.legend = F) +
+#     theme(axis.text.x = element_text(angle=60,hjust=1)) +
+#     scale_x_discrete(name = "Denial Reasons") +
+#     scale_y_continuous(name = "% Denial by Age Group") 
+
 plot_age <- ggplot(denial_reasons_count_by_age) +
-    facet_wrap(~applicant_age, ncol = 1) +
-    geom_col(aes(x=factor(denial_reason_text), y=pct_age_denial, fill=factor(applicant_age)), show.legend = F) +
+    geom_col(aes(fill=factor(denial_reason_text), y=pct_age_denial,x=factor(applicant_age)), show.legend = T) +
     theme(axis.text.x = element_text(angle=60,hjust=1)) +
-    scale_x_discrete(name = "Denial Reasons") +
-    scale_y_continuous(name = "% Denial by Age Group") 
+    xlab("Age Groups") +
+    ylab("% Denial Reasons") +
+    scale_fill_discrete(name = "Age\nGroups")
 
 save(plot_age, file = '/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Data/plot_age')
 
