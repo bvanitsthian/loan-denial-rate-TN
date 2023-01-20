@@ -138,7 +138,7 @@ denial_reasons_count_by_age <-
   select(loan_app_denied, applicant_age, `denial_reason-1`, `denial_reason-2`, `denial_reason-3`, `denial_reason-4`) %>%
   pivot_longer(cols = c(`denial_reason-1`, `denial_reason-2`, `denial_reason-3`, `denial_reason-4`),
                values_to = "denial_reason_code") %>%
-  filter(is.na(denial_reason_code)==F, denial_reason_code!=1111, loan_app_denied == 1) %>%
+  filter(is.na(denial_reason_code)==F, denial_reason_code!=1111, loan_app_denied == 1, applicant_age != ">74") %>%
   group_by(applicant_age, denial_reason_code) %>%
   summarize(denial_reason_count = n()) %>%
   left_join(denial_reasons, by = "denial_reason_code") %>%

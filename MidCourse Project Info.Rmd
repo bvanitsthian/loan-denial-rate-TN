@@ -1,8 +1,9 @@
 ---
-title: "Tennessee Loan Denial Indicators"
+title: "Secure Your Next Mortgage  in Tennessee"
 author: "Bua Matthews"
 date: "`r Sys.Date()`"
-output:  html_document:
+output:  
+  html_document:
     theme:
       bg: "#101010"
       fg: "#FDF7F7"
@@ -17,22 +18,24 @@ output:  html_document:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## Overview
 
 ```{r cars}
-summary(cars)
+#summary(cars)
+knitr::include_graphics("Data/slide2.png")
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+## Possible Reasons
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+There are two competing explanations for the disparities in mortgage denial rates among different race groups in Tennessee. One argument is that these disparities result from underlying racial disparities in credit worthiness. A competing view is that the disparities arise from a pattern of racial discrimination among mortgage lenders.
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+## Objective
+
+Data Question: Is race a stronger predictor of mortgage loan denial than income and associated indicators of creditworthiness in TN?
+
+
+## The Data
+
+The data used for my analysis is from The Home Mortgage Disclosure Act also known as HMDA. It is a credible source of data since HMDA requires many financial institutions to maintain, report, and publicly disclose loan-level information about mortgages. I decided to move forward with this dataset because it not only is credible, but also widely used in other journals and articles, like the ones referenced in this analysis. I use the most recent dataset available from the site, which is for the year 2021. The number of observations on this slide is what's left after applying my data filters. The dataset was pulled from the Snapshot dataset. The Snapshot files contain the national HMDA datasets as of April 30, 2022 for all HMDA reporters, as modified by the Bureau to protect applicant and borrower privacy. The snapshot file for 2021 was downlaoded in csv. 
