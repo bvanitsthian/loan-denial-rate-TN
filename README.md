@@ -2,7 +2,9 @@
 
 ## Overview
 
-![](Data/slide2.png)
+Research has found wide disparities in loan denial rates among different racial/ethnic groups. 
+
+![](./Data/slide2.png "Overview")
 
 ## Possible Reasons
 
