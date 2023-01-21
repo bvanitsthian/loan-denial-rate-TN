@@ -4,7 +4,7 @@
 
 Research has found wide disparities in loan denial rates among different racial/ethnic groups. 
 
-<img src="/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Data/slide2.png" alt="Alt text" title="Optional title">
+<img src="./Data/slide2.png">
 
 
 ## Possible Reasons
