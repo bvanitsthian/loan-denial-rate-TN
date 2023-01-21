@@ -217,19 +217,35 @@ mortgage_loan$num_reasons <- apply(mortgage_loan[c("denial_reason-1", "denial_re
 Logit Model: Age, DTI, Income, Race, Sex
 
 ```{r}
+#library(lme4)
+
 mortgage_loan_glm <- 
   mortgage_loan %>%
   filter(debt_to_income_group != "Exempt" & !is.na(debt_to_income_group),
          income > 0 & income < 200,
          loan_amount < 500000)
-  
-glm_ft <- 
-  glm(loan_app_denied ~ 
-        factor(applicant_age) + factor(debt_to_income_group) + income + factor(derived_race) + 
-        factor(derived_sex) -1, 
+
+# To control for fixed and random effect, use lme4
+
+# glm_ft <- 
+#   glmer(loan_app_denied ~ 
+#         (1|applicant_age) + (1|debt_to_income_group) + income + (1|derived_race) + 
+#         (1|derived_sex), 
+#       family = binomial(link = "logit"),
+#       data = mortgage_loan_glm)
+# summary(glm_ft)
+# coef(glm_ft)
+# ranef(glm_ft)
+
+
+glm_ft <-
+  glm(loan_app_denied ~
+        factor(applicant_age) + factor(debt_to_income_group) + income + factor(derived_race) +
+        factor(derived_sex) -1,
       family = binomial(link = "logit"),
       data = mortgage_loan_glm)
 summary(glm_ft)
+
 
 save(glm_ft, file = '/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Data/glm_ft')
 
@@ -242,6 +258,39 @@ table(mortgage_loan_glm[c("loan_app_denied","glm_ft_predict")])
 #https://www.statology.org/confusion-matrix-in-r/
 
 100*table(mortgage_loan_glm$glm_ft_predict==mortgage_loan_glm$loan_app_denied)/nrow(mortgage_loan_glm)
+```
+
+
+Calibration Curve Data
+```{r}
+mortgage_loan_glm$glm_ft_predict_probability <- 
+  predict(glm_ft, mortgage_loan_glm, type = "response") 
+
+bins <- seq(from = 0, to = 1, by=0.1)
+mortgage_loan_glm %>%
+  mutate(group=cut(glm_ft_predict_probability, bins)) %>%
+  group_by(group) %>%
+  summarize(mean_group = mean(loan_app_denied), count_group = n()) %>%
+  View()
+```
+
+
+Test Plot
+```{r}
+a <- 1-glm_ft_prediction$fit[1]
+b <- glm_ft_prediction$se.fit[1]
+
+x <- seq(0,1,length=100)
+height <- dnorm(x,a,2*b)
+
+plot_df <- data.frame(x=x,height=height)
+
+ggplot(plot_df, aes(x=x, y=height)) +
+  geom_line() +
+  scale_y_continuous(name = "", labels = NULL) +
+  ggtitle(paste0("You are estimated to have between a ", 100*round(1-(a+b*1.96), digits = 2), 
+      " and a ", 100*round(1-(x-b*1.96), digits = 2),
+      "% probability of being approved\n a mortgage loan in TN"))
 ```
 
 

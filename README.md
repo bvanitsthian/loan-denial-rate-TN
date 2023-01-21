@@ -1,5 +1,13 @@
 # Secure Your Next Mortgage  in Tennessee
 
+## Overview
+
+![](Data/slide2.png)
+
+## Possible Reasons
+
+There are two competing explanations for the disparities in mortgage denial rates among different race groups in Tennessee. One argument is that these disparities result from underlying racial disparities in credit worthiness. A competing view is that the disparities arise from a pattern of racial discrimination among mortgage lenders.
+
 ## Objective
 
 Data Question: Is race a stronger predictor of mortgage loan denial than income and associated indicators of creditworthiness in TN?
