@@ -4,7 +4,7 @@
 
 Research has found wide disparities in loan denial rates among different racial/ethnic groups. 
 
-![Home Mortgage Disclosure Act (HMDA) data reported by institutions in Tennessee for the years 2013-2018](/Users/thidathornvanitsthian/Documents/Data Science 2022/loan-denial-rate-TN/Images/denialrate.png "Optional title")
+![HDMA data reported by institutions in Tennessee for the years 2013-2018](./Images/denialrate.png "Optional title")
 
 
 ## Possible Reasons
